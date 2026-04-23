@@ -1,0 +1,241 @@
+{
+  "name": "My workflow 5",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 18
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -208,
+        16
+      ],
+      "id": "0c70dbf8-0a92-458e-8b6d-ceecc3ff735f",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "person": "PViH7pQb-F",
+        "text": "={{ $json.output }}",
+        "shareMediaCategory": "IMAGE",
+        "binaryPropertyName": "=generated_img.png",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        816,
+        16
+      ],
+      "id": "54a2c23d-b340-482a-ad95-b4b7f435120e",
+      "name": "Create a post",
+      "credentials": {
+        "linkedInOAuth2Api": {
+          "id": "eQfPQWPWZwiuCAFs",
+          "name": "Aiqus Aut"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1nqvkAopVovR4bubH-Ve1Y6vEUZoAocjUS8IhFSR3WY8",
+          "mode": "list",
+          "cachedResultName": "linked in AIQUS Automation post ideas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1nqvkAopVovR4bubH-Ve1Y6vEUZoAocjUS8IhFSR3WY8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1nqvkAopVovR4bubH-Ve1Y6vEUZoAocjUS8IhFSR3WY8/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "status",
+              "lookupValue": "no"
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        16,
+        16
+      ],
+      "id": "8633be52-6ce6-4263-a74f-efe56ebf62b1",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "rM5akQi8aIOYRA94",
+          "name": "Aiqus"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        320,
+        240
+      ],
+      "id": "22856a91-f93f-4c6b-83cc-2354908ba5ef",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "m2QnfVZ2tpmlQYEG",
+          "name": "Google Gemini(PaLM) Api account - hiremystudios"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Topic :  {{ $json.Topic }}\nDiscription : {{ $json['Description (What AI Should Generate)'] }}",
+        "options": {
+          "systemMessage": "<system_prompt>\n    <role>\n        You are an expert LinkedIn content writer who creates highly engaging, human-like posts.\n    </role>\n\n    <objective>\n        Generate a compelling LinkedIn post using the provided Topic (as Title) and Description.\n    </objective>\n\n    <inputs>\n        <input_1>Topic (This is the Title and must remain unchanged)</input_1>\n        <input_2>Description</input_2>\n    </inputs>\n\n    <instructions>\n        <instruction>Do NOT modify or rephrase the Topic. It must appear exactly as given at the top of the post.</instruction>\n        <instruction>Immediately after the title, write a strong, scroll-stopping hook.</instruction>\n        <instruction>The hook must be highly engaging and curiosity-driven.</instruction>\n        <instruction>Then continue with the full LinkedIn post content.</instruction>\n        <instruction>The total content must be at least 150 words.</instruction>\n        <instruction>Use ONLY the provided Topic and Description as the foundation.</instruction>\n        <instruction>Write in a completely human tone (natural, conversational, relatable).</instruction>\n        <instruction>Include emotional or conversational phrases like *\"isn’t that amazing?\"*, *\"you won’t believe this\"*, *\"here’s the truth\"* in italic format.</instruction>\n        <instruction>Use short paragraphs and line breaks for readability.</instruction>\n        <instruction>Use emojis where appropriate, but keep them minimal and relevant.</instruction>\n        <instruction>Ensure clarity and specificity — avoid generic or vague statements.</instruction>\n    </instructions>\n\n    <seo_requirements>\n        <instruction>Identify and naturally include relevant LinkedIn SEO keywords based on the Topic and Description.</instruction>\n        <instruction>Integrate keywords seamlessly into the content (do NOT list them separately).</instruction>\n        <instruction>Focus on industry-relevant terms, audience intent, and discoverability.</instruction>\n    </seo_requirements>\n\n    <output_format>\n        <linkedin_post>\n            Return ONLY plain text. Do NOT include XML tags, JSON, code blocks, or any wrappers.\n\n            Structure:\n            1. Title (exact Topic)\n            2. Hook (next line)\n            3. Full LinkedIn post content (minimum 150 words)\n        </linkedin_post>\n    </output_format>\n\n    <constraints>\n        <constraint>Do NOT generate a caption.</constraint>\n        <constraint>Do NOT include hashtags unless explicitly mentioned in the Description.</constraint>\n        <constraint>Do NOT mention AI or that the content is generated.</constraint>\n        <constraint>Do NOT change the title wording under any condition.</constraint>\n        <constraint>Output must be clean plain text only (important for LinkedIn API).</constraint>\n    </constraints>\n</system_prompt>",
+          "maxIterations": 5
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        240,
+        16
+      ],
+      "id": "b28241e6-279c-40ee-beba-51b44f7e099a",
+      "name": "Linked in post content generator"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://router.huggingface.co/nscale/v1/images/generations",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer "
+            },
+            {
+              "name": "Accept",
+              "value": "image/png"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "inputs",
+              "value": "={{ $('Get row(s) in sheet').item.json['Image Prompt (What to Generate)'] }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "generated_img.png"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        592,
+        16
+      ],
+      "id": "012624d9-3f3e-4831-b6b5-b21a240fb324",
+      "name": "HTTP Request1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Linked in post content generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Linked in post content generator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Linked in post content generator": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Create a post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "006de9d6-3262-49b6-a374-fe9da551a69d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2b3dee14923a31b66d7e98b61429de508ada10f478554bf89fb2d494829dab8e"
+  },
+  "id": "4D5iiGkFn94R1ceE",
+  "tags": []
+}
